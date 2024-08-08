@@ -94,9 +94,11 @@ if run_button:
     
     # Create a final DataFrame
     final_df = pd.DataFrame(all_data)
+    
     st.dataframe(final_df)
+    
     flnme = "Integrated_Data.xlsx"
-    buffer = BytesIO()
+    buffer = BytesIO(final_df)
     with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
         df.to_excel(writer, sheet_name='Integrated_Data')
     
