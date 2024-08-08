@@ -92,7 +92,6 @@ if run_button:
                     # Append the row data to the list
                     all_data.append(row_data)
     
-    # Create a final DataFrame
     final_df = pd.DataFrame(all_data)
     
     st.dataframe(final_df)
@@ -100,7 +99,7 @@ if run_button:
     flnme = "Integrated_Data.xlsx"
     buffer = BytesIO()
     with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
-        df.to_excel(writer, sheet_name='Integrated_Data')
+        final_df.to_excel(writer, sheet_name='Integrated_Data')
     
     st.download_button(label="Download Integrated Data Excel workbook", data=buffer.getvalue(), file_name=flnme, mime="application/vnd.ms-excel")
 
