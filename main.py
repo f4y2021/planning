@@ -1,7 +1,6 @@
 import pandas as pd
 
-# Load the Excel file
-file_path = 'ToTry.xlsx'
+file_path = st.file_uploader("Upload Excel File from Template", type=["xlxs"], accept_multiple_files=False)
 
 # Load the data with the correct header row, assuming headers are on row 5 (index 4)
 df = pd.read_excel(file_path, header=4, usecols="B,D:AB")
