@@ -92,14 +92,7 @@ if run_button:
     
     # Create a final DataFrame
     final_df = pd.DataFrame(all_data)
-    
-    # Write the DataFrame to an Excel file
-    #final_df.to_excel("tasks_output.xlsx", index=False)
 
-
-
-
-    
     flnme = "Integrated_Data.xlsx"
     buffer = BytesIO()
     with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
