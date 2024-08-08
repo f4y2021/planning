@@ -1,7 +1,7 @@
 import pandas as pd
 import streamlit as st
 
-file_path = st.file_uploader("Upload Excel File from Template", type=["xlxs"], accept_multiple_files=False)
+file_path = st.file_uploader("Upload Excel File from Template")
 
 run_button=st.button("Run")
 
