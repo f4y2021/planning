@@ -50,9 +50,7 @@ if run_button:
         # Concatenates the dataframes for each task into a dictionary
         task_dfs[task_index] = task_df
 
-    # Display the cleaned data for each task
-    for task_name, task_df in task_dfs.items():
-        st.dataframe(task_df)
+
     
     # Define additional fixed variables
     project = "Roketsan"
@@ -96,7 +94,7 @@ if run_button:
     
     # Create a final DataFrame
     final_df = pd.DataFrame(all_data)
-
+    st.dataframe(final_df)
     flnme = "Integrated_Data.xlsx"
     buffer = BytesIO()
     with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
