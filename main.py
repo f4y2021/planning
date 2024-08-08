@@ -1,5 +1,6 @@
 import pandas as pd
 import streamlit as st
+from io import BytesIO
 
 file_path = st.file_uploader("Upload Excel File from Template")
 
@@ -93,10 +94,16 @@ if run_button:
     final_df = pd.DataFrame(all_data)
     
     # Write the DataFrame to an Excel file
-    final_df.to_excel("tasks_output.xlsx", index=False)
+    #final_df.to_excel("tasks_output.xlsx", index=False)
 
-    download = st.download_button(
-        label="Download Integrated Data Excel",
-        data=final_df,
-        file_name='Integrated_Data'
-    )
+
+
+
+    
+    flnme = "Integrated_Data.xlsx"
+    buffer = BytesIO()
+    with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+        df.to_excel(writer, sheet_name='Integrated_Data')
+    
+    st.download_button(label="Download Integrated Data Excel workbook", data=buffer.getvalue(), file_name=flnme, mime="application/vnd.ms-excel")
+
