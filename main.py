@@ -98,7 +98,7 @@ if run_button:
     st.dataframe(final_df)
     
     flnme = "Integrated_Data.xlsx"
-    buffer = BytesIO(final_df)
+    buffer = BytesIO()
     with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
         df.to_excel(writer, sheet_name='Integrated_Data')
     
