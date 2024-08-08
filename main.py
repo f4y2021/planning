@@ -94,3 +94,9 @@ if run_button:
     
     # Write the DataFrame to an Excel file
     final_df.to_excel("tasks_output.xlsx", index=False)
+
+    download = st.download_button(
+        label="Download Integrated Data Excel",
+        data=final_df,
+        file_name='Integrated_Data'
+    )
