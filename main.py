@@ -9,7 +9,7 @@ run_button=st.button("Run")
 if run_button:
     # Load the data with the correct header row, assuming headers are on row 5 (index 4)
     df = pd.read_excel(file_path, header=4, usecols="B,D:AB",sheet_name='Planning To Be Updated')
-    
+    st.dataframe(df)
     # Drop columns A and C (0-indexed, so we drop columns at positions 0 and 2)
     #df.drop(df.columns[[0, 2]], axis=1, inplace=True)
     
