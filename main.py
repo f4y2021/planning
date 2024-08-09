@@ -12,6 +12,8 @@ st.set_page_config(
     layout="wide",
 )
 
+
+
 def load_data(file_obj, sheet_name):
     """Load the Excel file and return the DataFrame after initial processing."""
     df = pd.read_excel(file_obj, header=5, usecols="B,D:AS", sheet_name=sheet_name)
@@ -154,7 +156,8 @@ def main(file_objs, sheet_name, description):
     return concatenated_df
 
 # Streamlit UI
-st.title("Task Data Processor")
+#st.title("Task Data Processor")
+st.image('logo.png')
 
 file_objs = st.file_uploader("Upload Excel Files from Template", type=["xlsx"], accept_multiple_files=True)
 
