@@ -5,6 +5,14 @@ import xlsxwriter
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+st.set_page_config(
+    page_title="Integrated Planning",
+    page_icon="🧊",
+    layout="wide",
+    base="light"
+    }
+)
+
 def load_data(file_obj, sheet_name):
     """Load the Excel file and return the DataFrame after initial processing."""
     df = pd.read_excel(file_obj, header=5, usecols="B,D:AS", sheet_name=sheet_name)
