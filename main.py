@@ -25,56 +25,53 @@ def filter_before_equipa(df):
         raise ValueError("ERROR: 'Equipa' not found in the index.")
     return df
 
-def extract_wp_dfs(df):
-    """Extract DataFrames for each WP and store them in a dictionary."""
-    wp_indices = df.index[df.index.str.contains('WP')].tolist()
+def extract_task_dfs(df):
+    """Extract DataFrames for each task and store them in a dictionary."""
+    task_indices = df.index[df.index.str.contains('Task')].tolist()
     
-    wp_dfs = {}
-    for i, wp_index in enumerate(wp_indices):
-        start_idx = wp_index
-        end_idx = wp_indices[i+1] if i+1 < len(wp_indices) else None
+    task_dfs = {}
+    for i, task_index in enumerate(task_indices):
+        start_idx = task_index
+        end_idx = task_indices[i+1] if i+1 < len(task_indices) else None
         
-        wp_df = df.loc[start_idx:end_idx]
-        if i+1 < len(wp_indices):
-            wp_df = wp_df.iloc[1:-1]
+        task_df = df.loc[start_idx:end_idx]
+        if i+1 < len(task_indices):
+            task_df = task_df.iloc[1:-1]
         else:
-            wp_df = wp_df.iloc[1:]
+            task_df = task_df.iloc[1:]
         
-        wp_df = wp_df.reset_index()
-        wp_df.rename(columns={wp_df.columns[0]: 'Person'}, inplace=True)
-        wp_df['Person'] = wp_df['Person'].astype(str)
-        wp_df = wp_df[~wp_df['Person'].str.contains('Task', na=False)]
+        task_df = task_df.reset_index()
+        task_df.rename(columns={task_df.columns[0]: 'Person'}, inplace=True)
+        task_df['Person'] = task_df['Person'].astype(str)
+        task_df = task_df[~task_df['Person'].str.contains('WP', na=False)]
         
-        wp_dfs[wp_index] = wp_df
+        task_dfs[task_index] = task_df
     
-    return wp_dfs
+    return task_dfs
 
-def prepare_final_df(wp_dfs, project, description):
-    """Prepare the final DataFrame combining all WPs' data."""
+def prepare_final_df(task_dfs, project, description):
+    """Prepare the final DataFrame combining all tasks' data."""
     all_data = []
     
-    for wp_name, df in wp_dfs.items():
+    for task_name, df in task_dfs.items():
         for index, row in df.iterrows():
             for col in df.columns[1:]:  # Skip the 'Person' column
-                month = pd.to_datetime(col, errors='coerce').strftime('%Y-%m') if pd.notna(col) else None
+                month = pd.to_datetime(col).strftime('%Y-%m')
                 effort = row[col]
-                
-                if pd.notna(effort) and month:
-                    # Validate and handle WP value
-                    try:
-                        wp = int(wp_name.split()[1])
-                    except (IndexError, ValueError):
-                        wp = None
+                if pd.notna(effort):
+                    task = task_name.split(" - ")[0]
+                    wp = int(task.split()[1].split(".")[0])
                     
-                    if wp is not None:
-                        row_data = {
-                            "Project": project,
-                            "WP": wp,
-                            "Person": row['Person'],
-                            "Effort": effort,
-                            "Month": month
-                        }
-                        all_data.append(row_data)
+                    row_data = {
+                        "Project": project,
+                        "WP": wp,
+                        "Task": task,
+                        "Person": row['Person'],
+                        "Effort": effort,
+                        "Month": month
+                    }
+                    
+                    all_data.append(row_data)
     
     final_df = pd.DataFrame(all_data)
     return final_df
@@ -84,7 +81,11 @@ def visualize_data(final_df):
     st.subheader("Data Table")
     st.dataframe(final_df)
 
-    st.subheader("Effort Distribution by WP and Month")
+    st.subheader("Effort Distribution by Task and Month")
+    effort_pivot = final_df.pivot_table(values='Effort', index='Task', columns='Month', aggfunc='sum')
+    st.bar_chart(effort_pivot)
+    
+    st.subheader("Effort Distribution by Work Package (WP)")
     wp_pivot = final_df.pivot_table(values='Effort', index='WP', columns='Month', aggfunc='sum')
     st.bar_chart(wp_pivot)
 
@@ -96,13 +97,13 @@ def main(file_obj, sheet_name, description):
     """Main function to orchestrate the process."""
     df, project = load_data(file_obj, sheet_name)
     df = filter_before_equipa(df)
-    wp_dfs = extract_wp_dfs(df)
-    final_df = prepare_final_df(wp_dfs, project, description)
+    task_dfs = extract_task_dfs(df)
+    final_df = prepare_final_df(task_dfs, project, description)
     
     return final_df
 
 # Streamlit UI
-st.title("WP Data Processor")
+st.title("Task Data Processor")
 
 file_obj = st.file_uploader("Upload Excel File from Template")
 sheet_name = 'Planning To Be Updated'
