@@ -67,7 +67,7 @@ def prepare_final_df(task_dfs, project, description):
                         "Task": task,
                         "Person": row['Person'],
                         "Effort": effort,
-                        "Month": month
+                        "Month": pd.to_datetime(month)  # Ensure Month is a Timestamp
                     }
                     
                     all_data.append(row_data)
@@ -86,8 +86,8 @@ def visualize_data(final_df, wp_selected, persons_selected, date_range):
     
     # Filter by date range
     df_filtered['Month'] = pd.to_datetime(df_filtered['Month'])
-    df_filtered = df_filtered[(df_filtered['Month'] >= pd.to_datetime(date_range[0])) & 
-                              (df_filtered['Month'] <= pd.to_datetime(date_range[1]))]
+    df_filtered = df_filtered[(df_filtered['Month'] >= date_range[0]) & 
+                              (df_filtered['Month'] <= date_range[1])]
     
     # Display data table
     st.subheader("Filtered Data Table")
@@ -123,8 +123,7 @@ st.title("Task Data Processor")
 
 file_obj = st.file_uploader("Upload Excel File from Template")
 sheet_name = 'Planning To Be Updated'
-#description = st.text_input("Enter Description for the Task", "Description of the task")
-description = "Description of the task"  # Replace with actual description if needed
+description = st.text_input("Enter Description for the Task", "Description of the task")
 
 if st.button("Run") and file_obj:
     with st.spinner("Processing..."):
@@ -153,9 +152,9 @@ if st.button("Run") and file_obj:
 
             date_min = final_df['Month'].min()
             date_max = final_df['Month'].max()
-            date_range = st.slider("Select Date Range", min_value=pd.to_datetime(date_min), 
-                                   max_value=pd.to_datetime(date_max), 
-                                   value=(pd.to_datetime(date_min), pd.to_datetime(date_max)), 
+            date_range = st.slider("Select Date Range", min_value=date_min, 
+                                   max_value=date_max, 
+                                   value=(date_min, date_max), 
                                    format="YYYY-MM")
             
             # Visualize the data based on the selected filters
@@ -164,4 +163,4 @@ if st.button("Run") and file_obj:
         except Exception as e:
             st.error(f"An error occurred: {e}")
 else:
-    st.warning("Please upload an Excel file")
+    st.warning("Please upload an Excel file and provide a description.")
