@@ -87,7 +87,7 @@ def main(file_path, sheet_name, description, output_file):
     
 description = "Description of the task"  # Replace with actual description if needed
 sheet_name = 'Planning To Be Updated'
-flnme = "tasks_output.xlsx"
+output_file = "tasks_output.xlsx"
 
 file_path = st.file_uploader("Upload Excel File from Template")
 
@@ -99,5 +99,5 @@ if run_button:
     with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
         final_df.to_excel(writer, sheet_name='Integrated_Data')
     
-    st.download_button(label="Download Integrated Data Excel workbook", data=buffer.getvalue(), file_name=flnme, mime="application/vnd.ms-excel")
+    st.download_button(label="Download Integrated Data Excel workbook", data=buffer.getvalue(), file_name=output_file, mime="application/vnd.ms-excel")
 
