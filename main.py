@@ -94,7 +94,7 @@ file_path = st.file_uploader("Upload Excel File from Template")
 run_button=st.button("Run")
 
 if run_button:
-    main(file_path, sheet_name, description, output_file)
+    final_df = main(file_path, sheet_name, description, output_file)
 
 
 buffer = BytesIO()
