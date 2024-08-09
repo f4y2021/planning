@@ -6,9 +6,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 
-
-
-
 st.set_page_config(
     page_title="Integrated Planning",
     page_icon="📈",
@@ -139,33 +136,43 @@ def visualize_data(final_df):
         heatmap_data_wp = final_df.pivot_table(values='Hours', index='WP', columns='Month', aggfunc='sum')
         st.pyplot(plot_heatmap(heatmap_data_wp, 'WP'))
 
-def main(file_obj, sheet_name, description):
+def main(file_objs, sheet_name, description):
     """Main function to orchestrate the process."""
-    df, project = load_data(file_obj, sheet_name)
-    df = filter_before_equipa(df)
-    task_dfs = extract_task_dfs(df)
-    final_df = prepare_final_df(task_dfs, project, description)
+    all_dfs = []
+    project = None
+
+    for file_obj in file_objs:
+        df, project = load_data(file_obj, sheet_name)
+        df = filter_before_equipa(df)
+        task_dfs = extract_task_dfs(df)
+        final_df = prepare_final_df(task_dfs, project, description)
+        all_dfs.append(final_df)
+
+    # Concatenate all DataFrames
+    concatenated_df = pd.concat(all_dfs, ignore_index=True)
     
-    return final_df
+    return concatenated_df
 
 # Streamlit UI
 st.title("Task Data Processor")
 
-file_obj = st.file_uploader("Upload Excel File from Template")
+file_objs = st.file_uploader("Upload Excel Files from Template", type=["xlsx"], accept_multiple_files=True)
+
 sheet_name = 'Planning To Be Updated'
 description = "Description of the task"
 
 
 
-if st.button("Run",type="primary") and file_obj:
+
+if st.button("Run", type="primary") and file_objs:
     with st.spinner("Processing..."):
         try:
-            final_df = main(file_obj, sheet_name, description)
+            final_df = main(file_objs, sheet_name, description)
             
             # Prepare the Excel file for download
             buffer = BytesIO()
             with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
-                final_df.to_excel(writer, sheet_name='Integrated_Data')
+                final_df.to_excel(writer, sheet_name='Integrated_Data', index=False)
             
             st.success("Processing complete!")
             st.download_button(
@@ -181,4 +188,5 @@ if st.button("Run",type="primary") and file_obj:
         except Exception as e:
             st.error(f"An error occurred: {e}")
 else:
-    st.warning("Please upload an Excel file")
+    st.warning("Please upload Excel files")
+
