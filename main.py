@@ -3,7 +3,6 @@ import streamlit as st
 from io import BytesIO
 import xlsxwriter
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 def load_data(file_obj, sheet_name):
     """Load the Excel file and return the DataFrame after initial processing."""
@@ -76,22 +75,39 @@ def prepare_final_df(task_dfs, project, description):
     final_df = pd.DataFrame(all_data)
     return final_df
 
-def visualize_data(final_df):
-    """Visualize the final DataFrame with graphs and tables."""
-    st.subheader("Data Table")
-    st.dataframe(final_df)
+def visualize_data(final_df, wp_selected, persons_selected, date_range):
+    """Visualize the filtered DataFrame with graphs and tables."""
+    # Filter by selected WP
+    df_filtered = final_df[final_df['WP'] == wp_selected]
 
-    st.subheader("Effort Distribution by Task and Month")
-    effort_pivot = final_df.pivot_table(values='Effort', index='Task', columns='Month', aggfunc='sum')
-    st.bar_chart(effort_pivot)
+    # Filter by selected persons
+    if persons_selected:
+        df_filtered = df_filtered[df_filtered['Person'].isin(persons_selected)]
     
-    st.subheader("Effort Distribution by Work Package (WP)")
-    wp_pivot = final_df.pivot_table(values='Effort', index='WP', columns='Month', aggfunc='sum')
-    st.bar_chart(wp_pivot)
+    # Filter by date range
+    df_filtered['Month'] = pd.to_datetime(df_filtered['Month'])
+    df_filtered = df_filtered[(df_filtered['Month'] >= pd.to_datetime(date_range[0])) & 
+                              (df_filtered['Month'] <= pd.to_datetime(date_range[1]))]
+    
+    # Display data table
+    st.subheader("Filtered Data Table")
+    st.dataframe(df_filtered)
 
+    # Visualization: Effort Distribution by Task
+    st.subheader("Effort Distribution by Task")
+    effort_by_task = df_filtered.groupby('Task')['Effort'].sum().reset_index()
+    st.bar_chart(effort_by_task.set_index('Task'))
+
+    # Visualization: Effort by Month
+    st.subheader("Effort by Month")
+    effort_by_month = df_filtered.groupby('Month')['Effort'].sum().reset_index()
+    effort_by_month.set_index('Month', inplace=True)
+    st.line_chart(effort_by_month)
+
+    # Visualization: Effort by Person
     st.subheader("Effort by Person")
-    person_pivot = final_df.pivot_table(values='Effort', index='Person', columns='Month', aggfunc='sum')
-    st.bar_chart(person_pivot)
+    effort_by_person = df_filtered.groupby('Person')['Effort'].sum().reset_index()
+    st.bar_chart(effort_by_person.set_index('Person'))
 
 def main(file_obj, sheet_name, description):
     """Main function to orchestrate the process."""
@@ -128,8 +144,22 @@ if st.button("Run") and file_obj:
                 mime="application/vnd.ms-excel"
             )
 
-            # Visualize the data
-            visualize_data(final_df)
+            # Dynamic controls for visualization
+            wp_options = sorted(final_df['WP'].unique())
+            wp_selected = st.selectbox("Select Work Package (WP)", wp_options)
+
+            persons_options = sorted(final_df['Person'].unique())
+            persons_selected = st.multiselect("Select Persons", persons_options)
+
+            date_min = final_df['Month'].min()
+            date_max = final_df['Month'].max()
+            date_range = st.slider("Select Date Range", min_value=pd.to_datetime(date_min), 
+                                   max_value=pd.to_datetime(date_max), 
+                                   value=(pd.to_datetime(date_min), pd.to_datetime(date_max)), 
+                                   format="YYYY-MM")
+            
+            # Visualize the data based on the selected filters
+            visualize_data(final_df, wp_selected, persons_selected, date_range)
 
         except Exception as e:
             st.error(f"An error occurred: {e}")
