@@ -134,4 +134,4 @@ if st.button("Run") and file_obj:
         except Exception as e:
             st.error(f"An error occurred: {e}")
 else:
-    st.warning("Please upload an Excel file and provide a description.")
+    st.warning("Please upload an Excel file")
