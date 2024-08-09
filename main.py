@@ -151,41 +151,9 @@ file_obj = st.file_uploader("Upload Excel File from Template")
 sheet_name = 'Planning To Be Updated'
 description = "Description of the task"
 
-st.markdown("""
-    <style>
-    .center-button {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin-top: 20px;
-    }
-    .styled-button {
-        background-color: #1E90FF;
-        color: white;
-        border: none;
-        padding: 15px 30px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 18px;
-        margin: 4px 2px;
-        cursor: pointer;
-        border-radius: 8px;
-        transition: background-color 0.3s, transform 0.3s;
-    }
-    .styled-button:hover {
-        background-color: #4682B4;
-        transform: scale(1.05);
-    }
-    </style>
-    <div class="center-button">
-        <button class="styled-button" id="run-button">Run</button>
-    </div>
-    """, unsafe_allow_html=True)
 
-button_clicked = st.button("Run")
 
-if button_clicked and file_obj:
+if st.button("Run") and file_obj:
     with st.spinner("Processing..."):
         try:
             final_df = main(file_obj, sheet_name, description)
