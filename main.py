@@ -149,7 +149,7 @@ st.title("Task Data Processor")
 
 file_obj = st.file_uploader("Upload Excel File from Template")
 sheet_name = 'Planning To Be Updated'
-#description = st.text_input("Enter Description for the Task", "Description of the task")
+description = "Description of the task"
 
 if st.button("Run") and file_obj:
     with st.spinner("Processing..."):
