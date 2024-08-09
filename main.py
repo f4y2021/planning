@@ -105,7 +105,7 @@ def visualize_data(final_df):
     """Visualize the final DataFrame with graphs and tables."""
 
     st.subheader("Graphical Analysis")
-    with st.container():
+    with st.expander("Graphical Analysis"):
         col1, col2 = st.columns(2)
         
         with col1:
