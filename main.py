@@ -82,14 +82,15 @@ def plot_pie_chart(data, label):
     fig, ax = plt.subplots()
     data.plot.pie(autopct='%1.1f%%', ax=ax, startangle=90)
     ax.set_ylabel('')
-    ax.set_title(f'Total Effort Distribution by {label}')
+    ax.set_title(f'Total Hours Distribution by {label}')
     return fig
 
 def plot_heatmap(data, label):
     """Plot a heatmap for the given data."""
     fig, ax = plt.subplots()
+    sns.set(font_scale=0.5)
     sns.heatmap(data, annot=True, fmt='g', cmap='YlGnBu', ax=ax)
-    ax.set_title(f'Effort Heatmap by {label}')
+    ax.set_title(f'Hours Heatmap by {label}')
     return fig
 
 def visualize_data(final_df):
