@@ -61,13 +61,14 @@ def prepare_final_df(task_dfs, project, description):
                 if pd.notna(effort):
                     task = task_name.split(" - ")[0]
                     wp = int(task.split()[1].split(".")[0])
-                    
+                    hours = effort * 165  # 165 hours/month
                     row_data = {
                         "Project": project,
                         "WP": wp,
                         "Task": task,
                         "Person": row['Person'],
                         "Effort": effort,
+                        "Hours": hours,
                         "Month": month
                     }
                     
