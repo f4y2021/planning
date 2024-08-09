@@ -106,7 +106,7 @@ def visualize_data(final_df):
 
     with col2:
         st.subheader("Hours Distribution by Work Package (WP)")
-        wp_pivot = final_df.pivot_table(values='Hours', index='WP', columns='Month', aggfunc='sum')
+        wp_pivot = final_df.pivot_table(values='Hours', index='Month', columns='WP', aggfunc='sum')
         st.bar_chart(wp_pivot)
     
     
