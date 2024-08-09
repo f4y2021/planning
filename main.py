@@ -7,7 +7,7 @@ import seaborn as sns
 
 st.set_page_config(
     page_title="Integrated Planning",
-    page_icon="🧊",
+    page_icon="📈",
     layout="wide",
 )
 
@@ -149,7 +149,7 @@ st.title("Task Data Processor")
 
 file_obj = st.file_uploader("Upload Excel File from Template")
 sheet_name = 'Planning To Be Updated'
-description = st.text_input("Enter Description for the Task", "Description of the task")
+#description = st.text_input("Enter Description for the Task", "Description of the task")
 
 if st.button("Run") and file_obj:
     with st.spinner("Processing..."):
@@ -175,4 +175,4 @@ if st.button("Run") and file_obj:
         except Exception as e:
             st.error(f"An error occurred: {e}")
 else:
-    st.warning("Please upload an Excel file and provide a description.")
+    st.warning("Please upload an Excel file")
