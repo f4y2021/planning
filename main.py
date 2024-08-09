@@ -2,6 +2,8 @@ import pandas as pd
 import streamlit as st
 from io import BytesIO
 import xlsxwriter
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 def load_data(file_obj, sheet_name):
     """Load the Excel file and return the DataFrame after initial processing."""
@@ -74,6 +76,23 @@ def prepare_final_df(task_dfs, project, description):
     final_df = pd.DataFrame(all_data)
     return final_df
 
+def visualize_data(final_df):
+    """Visualize the final DataFrame with graphs and tables."""
+    st.subheader("Data Table")
+    st.dataframe(final_df)
+
+    st.subheader("Effort Distribution by Task and Month")
+    effort_pivot = final_df.pivot_table(values='Effort', index='Task', columns='Month', aggfunc='sum')
+    st.bar_chart(effort_pivot)
+    
+    st.subheader("Effort Distribution by Work Package (WP)")
+    wp_pivot = final_df.pivot_table(values='Effort', index='WP', columns='Month', aggfunc='sum')
+    st.bar_chart(wp_pivot)
+
+    st.subheader("Effort by Person")
+    person_pivot = final_df.pivot_table(values='Effort', index='Person', columns='Month', aggfunc='sum')
+    st.bar_chart(person_pivot)
+
 def main(file_obj, sheet_name, description):
     """Main function to orchestrate the process."""
     df, project = load_data(file_obj, sheet_name)
@@ -108,7 +127,11 @@ if st.button("Run") and file_obj:
                 file_name="tasks_output.xlsx",
                 mime="application/vnd.ms-excel"
             )
+
+            # Visualize the data
+            visualize_data(final_df)
+
         except Exception as e:
             st.error(f"An error occurred: {e}")
 else:
-    st.warning("Please upload an Excel file")
+    st.warning("Please upload an Excel file and provide a description.")
