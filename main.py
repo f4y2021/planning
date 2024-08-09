@@ -113,18 +113,6 @@ def visualize_data(final_df):
         wp_pivot = final_df.pivot_table(values='Hours', index='WP', columns='Month', aggfunc='sum')
         st.bar_chart(wp_pivot)
     
-    with st.expander("Monthly Trends"):
-        st.subheader("Monthly Trend for Effort by Task")
-        for task in final_df['Task'].unique():
-            task_df = final_df[final_df['Task'] == task]
-            task_pivot = task_df.pivot_table(values='Hours', index='Month', aggfunc='sum')
-            st.line_chart(task_pivot, use_container_width=True)
-
-        st.subheader("Monthly Trend for Effort by WP")
-        for wp in final_df['WP'].unique():
-            wp_df = final_df[final_df['WP'] == wp]
-            wp_pivot = wp_df.pivot_table(values='Hours', index='Month', aggfunc='sum')
-            st.line_chart(wp_pivot, use_container_width=True)
     
     with st.expander("Distribution Charts"):
         st.subheader("Total Effort Distribution by Task")
