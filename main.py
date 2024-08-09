@@ -101,7 +101,7 @@ def visualize_data(final_df):
     
     with col1:
         st.subheader("Hours Distribution by Task and Month")
-        effort_pivot = final_df.pivot_table(values='Hours', index='Task', columns='Month', aggfunc='sum')
+        effort_pivot = final_df.pivot_table(values='Hours', index='Month', columns='Task', aggfunc='sum')
         st.bar_chart(effort_pivot)
 
     with col2:
