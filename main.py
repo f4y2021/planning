@@ -80,6 +80,7 @@ def prepare_final_df(task_dfs, project, description):
 def plot_pie_chart(data, label):
     """Plot a pie chart for the given data."""
     fig, ax = plt.subplots()
+    sns.set(font_scale=0.5)
     data.plot.pie(autopct='%1.1f%%', ax=ax, startangle=90)
     ax.set_ylabel('')
     ax.set_title(f'Total Hours Distribution by {label}')
@@ -88,7 +89,7 @@ def plot_pie_chart(data, label):
 def plot_heatmap(data, label):
     """Plot a heatmap for the given data."""
     fig, ax = plt.subplots()
-    sns.set(font_scale=0.5)
+    sns.set(font_scale=0.3)
     sns.heatmap(data, annot=True, fmt='g', cmap='YlGnBu', ax=ax)
     ax.set_title(f'Hours Heatmap by {label}')
     return fig
@@ -109,8 +110,6 @@ def visualize_data(final_df):
         st.subheader("Hours Distribution by Work Package (WP)")
         wp_pivot = final_df.pivot_table(values='Hours', index='Month', columns='WP', aggfunc='sum')
         st.bar_chart(wp_pivot)
-    
-    
     
     st.subheader("Total Hours Distribution by Task")
     total_effort_by_task = final_df.groupby('Task')['Hours'].sum()
