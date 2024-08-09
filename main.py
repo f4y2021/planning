@@ -161,9 +161,6 @@ file_objs = st.file_uploader("Upload Excel Files from Template", type=["xlsx"], 
 sheet_name = 'Planning To Be Updated'
 description = "Description of the task"
 
-
-
-
 if st.button("Run", type="primary") and file_objs:
     with st.spinner("Processing..."):
         try:
