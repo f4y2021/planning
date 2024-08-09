@@ -153,7 +153,7 @@ description = "Description of the task"
 
 
 
-if st.button("Run") and file_obj:
+if st.button("Run",type="primary") and file_obj:
     with st.spinner("Processing..."):
         try:
             final_df = main(file_obj, sheet_name, description)
