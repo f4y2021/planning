@@ -56,20 +56,25 @@ def prepare_final_df(wp_dfs, project, description):
     for wp_name, df in wp_dfs.items():
         for index, row in df.iterrows():
             for col in df.columns[1:]:  # Skip the 'Person' column
-                month = pd.to_datetime(col).strftime('%Y-%m')
+                month = pd.to_datetime(col, errors='coerce').strftime('%Y-%m') if pd.notna(col) else None
                 effort = row[col]
-                if pd.notna(effort):
-                    wp = int(wp_name.split()[1])
+                
+                if pd.notna(effort) and month:
+                    # Validate and handle WP value
+                    try:
+                        wp = int(wp_name.split()[1])
+                    except (IndexError, ValueError):
+                        wp = None
                     
-                    row_data = {
-                        "Project": project,
-                        "WP": wp,
-                        "Person": row['Person'],
-                        "Effort": effort,
-                        "Month": month
-                    }
-                    
-                    all_data.append(row_data)
+                    if wp is not None:
+                        row_data = {
+                            "Project": project,
+                            "WP": wp,
+                            "Person": row['Person'],
+                            "Effort": effort,
+                            "Month": month
+                        }
+                        all_data.append(row_data)
     
     final_df = pd.DataFrame(all_data)
     return final_df
