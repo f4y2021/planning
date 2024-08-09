@@ -83,15 +83,15 @@ def visualize_data(final_df):
     st.dataframe(final_df)
 
     st.subheader("Effort Distribution by Task and Month")
-    effort_pivot = final_df.pivot_table(values='Effort', index='Task', columns='Month', aggfunc='sum')
+    effort_pivot = final_df.pivot_table(values='Hours', index='Task', columns='Month', aggfunc='sum')
     st.bar_chart(effort_pivot)
     
     st.subheader("Effort Distribution by Work Package (WP)")
-    wp_pivot = final_df.pivot_table(values='Effort', index='WP', columns='Month', aggfunc='sum')
+    wp_pivot = final_df.pivot_table(values='Hours', index='WP', columns='Month', aggfunc='sum')
     st.bar_chart(wp_pivot)
 
     st.subheader("Effort by Person")
-    person_pivot = final_df.pivot_table(values='Effort', index='Person', columns='Month', aggfunc='sum')
+    person_pivot = final_df.pivot_table(values='Hours', index='Person', columns='Month', aggfunc='sum')
     st.bar_chart(person_pivot)
 
 def main(file_obj, sheet_name, description):
