@@ -56,9 +56,9 @@ def prepare_final_df(task_dfs, project, description):
     for task_name, df in task_dfs.items():
         for index, row in df.iterrows():
             for col in df.columns[1:]:  # Skip the 'Person' column
-                month = pd.to_datetime(col).strftime('%Y-%m')
+                month = pd.to_datetime(col, errors='coerce').strftime('%Y-%m') if pd.notna(col) else None
                 effort = row[col]
-                if pd.notna(effort):
+                if pd.notna(effort) and month:
                     task = task_name.split(" - ")[0]
                     wp = int(task.split()[1].split(".")[0])
                     hours = effort * 165  # 165 hours/month
@@ -85,7 +85,7 @@ def visualize_data(final_df):
     st.subheader("Effort Distribution by Task and Month")
     effort_pivot = final_df.pivot_table(values='Hours', index='Task', columns='Month', aggfunc='sum')
     st.bar_chart(effort_pivot)
-    
+
     st.subheader("Effort Distribution by Work Package (WP)")
     wp_pivot = final_df.pivot_table(values='Hours', index='WP', columns='Month', aggfunc='sum')
     st.bar_chart(wp_pivot)
@@ -93,6 +93,52 @@ def visualize_data(final_df):
     st.subheader("Effort by Person")
     person_pivot = final_df.pivot_table(values='Hours', index='Person', columns='Month', aggfunc='sum')
     st.bar_chart(person_pivot)
+
+    # Line charts for trends
+    st.subheader("Monthly Trend for Effort by Task")
+    for task in final_df['Task'].unique():
+        task_df = final_df[final_df['Task'] == task]
+        task_pivot = task_df.pivot_table(values='Hours', index='Month', aggfunc='sum')
+        st.line_chart(task_pivot, use_container_width=True)
+
+    st.subheader("Monthly Trend for Effort by WP")
+    for wp in final_df['WP'].unique():
+        wp_df = final_df[final_df['WP'] == wp]
+        wp_pivot = wp_df.pivot_table(values='Hours', index='Month', aggfunc='sum')
+        st.line_chart(wp_pivot, use_container_width=True)
+
+    # Pie charts for distribution
+    st.subheader("Total Effort Distribution by Task")
+    total_effort_by_task = final_df.groupby('Task')['Hours'].sum()
+    st.pyplot(plot_pie_chart(total_effort_by_task, 'Task'))
+
+    st.subheader("Total Effort Distribution by WP")
+    total_effort_by_wp = final_df.groupby('WP')['Hours'].sum()
+    st.pyplot(plot_pie_chart(total_effort_by_wp, 'WP'))
+
+    # Heatmap for effort analysis
+    st.subheader("Effort Heatmap by Task and Month")
+    heatmap_data_task = final_df.pivot_table(values='Hours', index='Task', columns='Month', aggfunc='sum')
+    st.pyplot(plot_heatmap(heatmap_data_task, 'Task'))
+
+    st.subheader("Effort Heatmap by WP and Month")
+    heatmap_data_wp = final_df.pivot_table(values='Hours', index='WP', columns='Month', aggfunc='sum')
+    st.pyplot(plot_heatmap(heatmap_data_wp, 'WP'))
+
+def plot_pie_chart(data, label):
+    """Plot a pie chart for the given data."""
+    fig, ax = plt.subplots()
+    data.plot.pie(autopct='%1.1f%%', ax=ax, startangle=90)
+    ax.set_ylabel('')
+    ax.set_title(f'Total Effort Distribution by {label}')
+    return fig
+
+def plot_heatmap(data, label):
+    """Plot a heatmap for the given data."""
+    fig, ax = plt.subplots()
+    sns.heatmap(data, annot=True, fmt='g', cmap='YlGnBu', ax=ax)
+    ax.set_title(f'Effort Heatmap by {label}')
+    return fig
 
 def main(file_obj, sheet_name, description):
     """Main function to orchestrate the process."""
