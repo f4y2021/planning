@@ -88,7 +88,7 @@ def main(file_path, sheet_name, description, output_file):
     
 description = "Description of the task"  # Replace with actual description if needed
 sheet_name = 'Planning To Be Updated'
-flnme = "tasks_output_" + project + ".xlsx"
+flnme = "tasks_output.xlsx"
 
 file_path = st.file_uploader("Upload Excel File from Template")
 
