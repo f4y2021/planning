@@ -94,12 +94,8 @@ def plot_heatmap(data, label):
 
 def visualize_data(final_df):
     """Visualize the final DataFrame with graphs and tables."""
-    
-    st.subheader("Data Overview")
-    with st.container():
-        st.dataframe(final_df)
 
-    st.subheader("Effort Analysis")
+    st.subheader("Graphical Analysis")
 
     col1, col2 = st.columns(2)
     
