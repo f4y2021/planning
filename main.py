@@ -95,11 +95,9 @@ run_button=st.button("Run")
 
 if run_button:
     final_df = main(file_path, sheet_name, description, output_file)
-
-
-buffer = BytesIO()
-with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
-    final_df.to_excel(writer, sheet_name='Integrated_Data')
-
-st.download_button(label="Download Integrated Data Excel workbook", data=buffer.getvalue(), file_name=flnme, mime="application/vnd.ms-excel")
+    buffer = BytesIO()
+    with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+        final_df.to_excel(writer, sheet_name='Integrated_Data')
+    
+    st.download_button(label="Download Integrated Data Excel workbook", data=buffer.getvalue(), file_name=flnme, mime="application/vnd.ms-excel")
 
