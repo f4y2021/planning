@@ -10,7 +10,6 @@ st.set_page_config(
     page_icon="🧊",
     layout="wide",
     base="light"
-    }
 )
 
 def load_data(file_obj, sheet_name):
