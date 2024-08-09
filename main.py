@@ -77,42 +77,6 @@ def prepare_final_df(task_dfs, project, description):
     final_df = pd.DataFrame(all_data)
     return final_df
 
-def visualize_data(final_df):
-    """Visualize the final DataFrame with graphs and tables."""
-    st.subheader("Data Table")
-    st.dataframe(final_df)
-
-    st.subheader("Effort Distribution by Task and Month")
-    effort_pivot = final_df.pivot_table(values='Hours', index='Task', columns='Month', aggfunc='sum')
-    st.bar_chart(effort_pivot)
-
-    st.subheader("Effort Distribution by Work Package (WP)")
-    wp_pivot = final_df.pivot_table(values='Hours', index='WP', columns='Month', aggfunc='sum')
-    st.bar_chart(wp_pivot)
-
-    st.subheader("Effort by Person")
-    person_pivot = final_df.pivot_table(values='Hours', index='Person', columns='Month', aggfunc='sum')
-    st.bar_chart(person_pivot)
-
-
-    # Pie charts for distribution
-    st.subheader("Total Effort Distribution by Task")
-    total_effort_by_task = final_df.groupby('Task')['Hours'].sum()
-    st.pyplot(plot_pie_chart(total_effort_by_task, 'Task'))
-
-    st.subheader("Total Effort Distribution by WP")
-    total_effort_by_wp = final_df.groupby('WP')['Hours'].sum()
-    st.pyplot(plot_pie_chart(total_effort_by_wp, 'WP'))
-
-    # Heatmap for effort analysis
-    st.subheader("Effort Heatmap by Task and Month")
-    heatmap_data_task = final_df.pivot_table(values='Hours', index='Task', columns='Month', aggfunc='sum')
-    st.pyplot(plot_heatmap(heatmap_data_task, 'Task'))
-
-    st.subheader("Effort Heatmap by WP and Month")
-    heatmap_data_wp = final_df.pivot_table(values='Hours', index='WP', columns='Month', aggfunc='sum')
-    st.pyplot(plot_heatmap(heatmap_data_wp, 'WP'))
-
 def plot_pie_chart(data, label):
     """Plot a pie chart for the given data."""
     fig, ax = plt.subplots()
@@ -127,6 +91,58 @@ def plot_heatmap(data, label):
     sns.heatmap(data, annot=True, fmt='g', cmap='YlGnBu', ax=ax)
     ax.set_title(f'Effort Heatmap by {label}')
     return fig
+
+def visualize_data(final_df):
+    """Visualize the final DataFrame with graphs and tables."""
+    
+    st.subheader("Data Overview")
+    with st.container():
+        st.dataframe(final_df)
+
+    st.subheader("Effort Analysis")
+
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.subheader("Effort Distribution by Task and Month")
+        effort_pivot = final_df.pivot_table(values='Hours', index='Task', columns='Month', aggfunc='sum')
+        st.bar_chart(effort_pivot)
+
+    with col2:
+        st.subheader("Effort Distribution by Work Package (WP)")
+        wp_pivot = final_df.pivot_table(values='Hours', index='WP', columns='Month', aggfunc='sum')
+        st.bar_chart(wp_pivot)
+    
+    with st.expander("Monthly Trends"):
+        st.subheader("Monthly Trend for Effort by Task")
+        for task in final_df['Task'].unique():
+            task_df = final_df[final_df['Task'] == task]
+            task_pivot = task_df.pivot_table(values='Hours', index='Month', aggfunc='sum')
+            st.line_chart(task_pivot, use_container_width=True)
+
+        st.subheader("Monthly Trend for Effort by WP")
+        for wp in final_df['WP'].unique():
+            wp_df = final_df[final_df['WP'] == wp]
+            wp_pivot = wp_df.pivot_table(values='Hours', index='Month', aggfunc='sum')
+            st.line_chart(wp_pivot, use_container_width=True)
+    
+    with st.expander("Distribution Charts"):
+        st.subheader("Total Effort Distribution by Task")
+        total_effort_by_task = final_df.groupby('Task')['Hours'].sum()
+        st.pyplot(plot_pie_chart(total_effort_by_task, 'Task'))
+
+        st.subheader("Total Effort Distribution by WP")
+        total_effort_by_wp = final_df.groupby('WP')['Hours'].sum()
+        st.pyplot(plot_pie_chart(total_effort_by_wp, 'WP'))
+    
+    with st.expander("Heatmaps"):
+        st.subheader("Effort Heatmap by Task and Month")
+        heatmap_data_task = final_df.pivot_table(values='Hours', index='Task', columns='Month', aggfunc='sum')
+        st.pyplot(plot_heatmap(heatmap_data_task, 'Task'))
+
+        st.subheader("Effort Heatmap by WP and Month")
+        heatmap_data_wp = final_df.pivot_table(values='Hours', index='WP', columns='Month', aggfunc='sum')
+        st.pyplot(plot_heatmap(heatmap_data_wp, 'WP'))
 
 def main(file_obj, sheet_name, description):
     """Main function to orchestrate the process."""
