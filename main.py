@@ -3,10 +3,9 @@ import streamlit as st
 from io import BytesIO
 import xlsxwriter
 
-
-def load_data(file_path, sheet_name):
+def load_data(file_obj, sheet_name):
     """Load the Excel file and return the DataFrame after initial processing."""
-    df = pd.read_excel(file_path, header=5, usecols="B,D:AS", sheet_name=sheet_name)
+    df = pd.read_excel(file_obj, header=5, usecols="B,D:AS", sheet_name=sheet_name)
     
     project = df.columns[0]
     df.set_index(df.columns[0], inplace=True)
@@ -65,7 +64,6 @@ def prepare_final_df(task_dfs, project, description):
                         "Project": project,
                         "WP": wp,
                         "Task": task,
-                        #"Description": description,
                         "Person": row['Person'],
                         "Effort": effort,
                         "Month": month
@@ -76,28 +74,40 @@ def prepare_final_df(task_dfs, project, description):
     final_df = pd.DataFrame(all_data)
     return final_df
 
-def main(file_path, sheet_name, description, output_file):
+def main(file_obj, sheet_name, description):
     """Main function to orchestrate the process."""
-    df, project = load_data(file_path, sheet_name)
+    df, project = load_data(file_obj, sheet_name)
     df = filter_before_equipa(df)
     task_dfs = extract_task_dfs(df)
     final_df = prepare_final_df(task_dfs, project, description)
     
     return final_df
-    
-description = "Description of the task"  # Replace with actual description if needed
+
+# Streamlit UI
+st.title("Task Data Processor")
+
+file_obj = st.file_uploader("Upload Excel File from Template")
 sheet_name = 'Planning To Be Updated'
-output_file = "tasks_output.xlsx"
+description = st.text_input("Enter Description for the Task", "Description of the task")
 
-file_path = st.file_uploader("Upload Excel File from Template")
-
-run_button=st.button("Run")
-
-if run_button:
-    final_df = main(file_path, sheet_name, description, output_file)
-    buffer = BytesIO()
-    with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
-        final_df.to_excel(writer, sheet_name='Integrated_Data')
-    
-    st.download_button(label="Download Integrated Data Excel workbook", data=buffer.getvalue(), file_name=output_file, mime="application/vnd.ms-excel")
-
+if st.button("Run") and file_obj:
+    with st.spinner("Processing..."):
+        try:
+            final_df = main(file_obj, sheet_name, description)
+            
+            # Prepare the Excel file for download
+            buffer = BytesIO()
+            with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+                final_df.to_excel(writer, sheet_name='Integrated_Data')
+            
+            st.success("Processing complete!")
+            st.download_button(
+                label="Download Integrated Data Excel workbook",
+                data=buffer.getvalue(),
+                file_name="tasks_output.xlsx",
+                mime="application/vnd.ms-excel"
+            )
+        except Exception as e:
+            st.error(f"An error occurred: {e}")
+else:
+    st.warning("Please upload an Excel file and provide a description.")
