@@ -83,8 +83,7 @@ def main(file_path, sheet_name, description, output_file):
     task_dfs = extract_task_dfs(df)
     final_df = prepare_final_df(task_dfs, project, description)
     
-    final_df.to_excel(output_file, index=False)
-    print(final_df)
+    return final_df
     
 description = "Description of the task"  # Replace with actual description if needed
 sheet_name = 'Planning To Be Updated'
