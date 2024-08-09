@@ -158,7 +158,7 @@ def main(file_objs, sheet_name, description):
 # Streamlit UI
 #st.title("Task Data Processor")
 
-colu1, colu2, colu3 = st.columns([1, 3, 1])
+colu1, colu2, colu3 = st.columns([1, 2, 1])
 colu2.image('logo_400.png')
 
 file_objs = st.file_uploader("Upload Excel Files from Template", type=["xlsx"], accept_multiple_files=True)
