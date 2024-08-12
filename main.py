@@ -65,7 +65,7 @@ def prepare_final_df(task_dfs, project, description):
     for task_name, df in task_dfs.items():
         for index, row in df.iterrows():
             for col in df.columns[1:]:  # Skip the 'Person' column
-                month = pd.to_datetime(col, errors='coerce').to_period('M') if pd.notna(col) else None
+                month = pd.to_datetime(col, errors='coerce') if pd.notna(col) else None
                 effort = row[col]
                 if pd.notna(effort) and month:
                     task = task_name.split(" - ")[0]
