@@ -153,7 +153,7 @@ def main(file_objs, sheet_name, description):
     # Concatenate all DataFrames
     concatenated_df = pd.concat(all_dfs, ignore_index=True)
     
-    return concatenated_df
+    return concatenated_df, project
 
 # Streamlit UI
 #st.title("Task Data Processor")
@@ -169,7 +169,7 @@ description = "Description of the task"
 if st.button("Run", type="primary") and file_objs:
     with st.spinner("Processing..."):
         try:
-            final_df = main(file_objs, sheet_name, description)
+            final_df, project = main(file_objs, sheet_name, description)
             
             # Prepare the Excel file for download
             buffer = BytesIO()
@@ -180,7 +180,7 @@ if st.button("Run", type="primary") and file_objs:
             st.download_button(
                 label="Download Integrated Data Excel workbook",
                 data=buffer.getvalue(),
-                file_name="tasks_output.xlsx",
+                file_name=f"tasks_output_{project}.xlsx",
                 mime="application/vnd.ms-excel"
             )
 
